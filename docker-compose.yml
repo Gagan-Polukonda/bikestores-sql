@@ -1,0 +1,37 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: bikestores-sql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - bikestores_data:/var/opt/mssql
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /opt/mssql-tools18/bin/sqlcmd -C -S 127.0.0.1 -U SA -P "$${MSSQL_SA_PASSWORD}" -Q "SELECT 1" -b -o /dev/null
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+
+  init:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: bikestores-sql-init
+    depends_on:
+      mssql:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    entrypoint: ["/bin/bash", "/bikestores-sql/initialize/init-db.sh"]
+    volumes:
+      - ./:/bikestores-sql:ro
+    restart: "no"
+
+volumes:
+  bikestores_data:

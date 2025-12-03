@@ -1,7 +1,7 @@
-CREATE DATABASE BikeStore;
+CREATE DATABASE BikeStores;
 GO
 
-USE BikeStore;
+USE BikeStores;
 GO
 
 -- create schemas

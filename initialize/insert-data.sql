@@ -1,4 +1,4 @@
-USE BikeStore;
+USE BikeStores;
 Go
 
 SET IDENTITY_INSERT production.brands ON;  
